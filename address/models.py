@@ -34,14 +34,16 @@ class Address(models.Model):
     district = models.CharField(max_length=100, null=True, blank=True)
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
     cep = models.CharField(max_length=8, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, editable=False)
 
-
-    def __str__(self):
-        return '{place}, {number}, {complement} {district} - {city}/{uf}{cep}'.format(
+    @property
+    def full_address(self):
+        return '{place}, {number},{complement}{district}{city}/{uf}{cep}'.format(
             place=self.place,
             number=self.number,
-            complement='{},'.format(self.complement) if self.complement else '',
-            district=self.district if self.district else '',
+            complement='{}, '.format(self.complement) if self.complement else ' ',
+            district='{}, '.format(self.complement) if self.district else ' ',
             city=self.city.name,
             uf=self.city.state.uf,
             cep=' - %s%s%s%s%s-%s%s%s' %tuple(self.cep) if self.cep else '')
