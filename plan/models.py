@@ -6,5 +6,8 @@ from cardapioOnlineApi.base_model import BaseModel
 
 class Plan(BaseModel):
     name = models.CharField(max_length=150)
-    value = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
     description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name

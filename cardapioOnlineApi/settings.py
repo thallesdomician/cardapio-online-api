@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'address',
     'specialty',
     'plan',
+    'product',
     'rest_framework',
 ]
 
@@ -134,3 +135,15 @@ MEDIA_URL = '/media/'
 MEDIA_LOGO_SIZE = 300
 
 MEDIA_LOGO_THUMBNAIL_SIZE = 100
+
+
+DAYS_OF_WEEK = [
+        ('Mon', 'Monday'),
+        ('Tue', 'Tuesday'),
+        ('Wed', 'Wednesday'),
+        ('Thu', 'Thursday'),
+        ('Fri', 'Friday'),
+        ('Sat', 'Saturday'),
+        ('Sun', 'Sunday'),
+    ]
+

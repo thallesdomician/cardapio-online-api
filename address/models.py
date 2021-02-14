@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from cardapioOnlineApi.base_model import BaseModel
 
 
-class State(BaseModel):
+class State(models.Model):
     name = models.CharField(max_length=25)
     uf = models.CharField(max_length=2)
 
@@ -16,7 +16,7 @@ class State(BaseModel):
         ordering = ['name']
 
 
-class City(BaseModel):
+class City(models.Model):
     name = models.CharField(max_length=40)
     state = models.ForeignKey(State, on_delete=models.CASCADE)
 
@@ -37,8 +37,6 @@ class Address(BaseModel):
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
     cep = models.CharField(max_length=8, null=True, blank=True)
 
-
-
     @property
     def full_address(self):
         return '{place}, {number},{complement}{district}{city}/{uf}{cep}'.format(
@@ -48,7 +46,7 @@ class Address(BaseModel):
             district='{}, '.format(self.complement) if self.district else ' ',
             city=self.city.name,
             uf=self.city.state.uf,
-            cep=' - %s%s%s%s%s-%s%s%s' %tuple(self.cep) if self.cep else '')
+            cep=' - %s%s%s%s%s-%s%s%s' % tuple(self.cep) if self.cep else '')
 
     def __str__(self):
         return self.full_address
@@ -61,8 +59,9 @@ class AddressAdminInline(admin.StackedInline):
 class CityAdminInline(admin.TabularInline):
     model = City
 
+
 class StateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'uf', 'deleted')
+    list_display = ('name', 'uf')
     inlines = [
-            CityAdminInline,
-        ]
+        CityAdminInline,
+    ]
