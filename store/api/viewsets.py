@@ -18,6 +18,8 @@ class StoreViewSet(ModelViewSet):
 
     serializer_class = StoreSerializer
 
+    filter_fields = ('name', 'specialty')
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 

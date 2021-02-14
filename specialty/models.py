@@ -1,13 +1,18 @@
 from django.db import models
+from django.contrib import admin
 
 # Create your models here.
-class Specialty(models.Model):
+from cardapioOnlineApi.base_model import BaseModel
+
+
+class Specialty(BaseModel):
     name = models.CharField(max_length=30)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True, editable=False)
 
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name_plural = 'Specialties'
+
+class AdminSpecialty(admin.ModelAdmin):
+    readonly_fields = ('created_at', 'updated_at', 'deleted')

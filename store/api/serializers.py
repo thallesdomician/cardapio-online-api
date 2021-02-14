@@ -12,8 +12,7 @@ class StoreSerializer(ModelSerializer):
     # )
     class Meta:
         model = Store
-        fields = ('id', 'name', 'slug', 'cnpj', 'full_address', 'specialty', 'active', 'created_at', 'updated_at')
-
+        fields = ('id', 'name', 'logo', 'thumbnail', 'slug', 'cnpj', 'address', 'specialty', 'active', 'created_at', 'updated_at')
         def validate(self, attrs):
             valite_cnpj(attrs['cnpj'])
             UniqueValidator(queryset=Store.objects.all())
