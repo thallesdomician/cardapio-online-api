@@ -17,6 +17,7 @@ from store.validators import valite_cnpj, validate_logo_size
 
 
 class Store(BaseModel):
+    user =
     name = models.CharField(max_length=100, unique=True, )
     logo = models.ImageField(upload_to='store', null=True, blank=True, validators=[validate_logo_size])
     thumbnail = models.ImageField(upload_to='thumbnail', editable=False, blank=True, null=True)
