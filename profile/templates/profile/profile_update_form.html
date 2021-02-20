@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block container %}
+
+
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">{% trans 'Profile' %}</h4>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            {% for field in form %}
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        {{ field }}
+                                        {% for error in field.errors %}
+                                            <small class="badge badge-default badge-danger form-text text-white">{{ error }}</small>
+
+                                        {% endfor %}
+                                        {% if field.help_text and form.errors %}
+                                            {% for help_text in field.help_text %}
+                                                <small
+                                                        class="form-text text-muted">{{ help_text }}</small>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    {% if field.help_texts %}
+                                        <small id="{{ field.id_for_label }}-help"
+                                               class="form-text text-muted">{{ field.help_text|safe }}</small>
+                                    {% endif %}
+                                </div>
+
+
+                            {% endfor %}
+                        </div>
+                        <div class="col-lg-6 offset-lg-3 text-center">
+                            <button type="submit" class="btn btn-block btn-dark">{% trans 'Save' %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
