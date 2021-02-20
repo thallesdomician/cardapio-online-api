@@ -1,8 +1,7 @@
 from django.db import models
-from django.contrib import admin
 
 # Create your models here.
-from cardapioOnlineApi.base_model import BaseModel
+from globals.models.base_model import BaseModel
 
 
 class Specialty(BaseModel):

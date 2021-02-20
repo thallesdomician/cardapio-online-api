@@ -1,10 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'includes/registration/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+    <h2 class="mt-3 text-center">Sign In</h2>
+    <p class="text-center">Enter your email address and password to access admin panel.</p>
+    <form method="post" class="mt-4">{% csrf_token %}
+        <div class="row">
+            {% for field in form %}
+                <div class="col-12">
+                    <div class="form-group"
+                    >
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <small class="badge badge-default badge-danger form-text text-white">{{ error }}</small>
+
+                        {% endfor %}
+                        {% if field.help_text and form.errors %}
+                            {% for help_text in field.help_text %}
+                                <small
+                                        class="form-text text-muted">{{ help_text }}</small>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    {% if field.help_texts %}
+                        <small id="{{ field.id_for_label }}-help"
+                               class="form-text text-muted">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div class="col-lg-12 text-center">
+                <button type="submit" class="btn btn-block btn-dark">{% trans 'Login' %}</button>
+            </div>
+            <div class="col-lg-12 text-center mt-5">
+                {% trans 'Already have an account?' %} <a href="{% url 'register' %}"
+                                                          class="text-danger">{% trans 'Sign up' %}</a>
+            </div>
+        </div>
+
+
+    </form>
+{% endblock %}

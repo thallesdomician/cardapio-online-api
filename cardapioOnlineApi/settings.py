@@ -24,7 +24,7 @@ SECRET_KEY = 'g_1zolk=!e&uz621dbx0nysrw$$fzf4f3^4k(8svb#v53r&twr'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -36,12 +36,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_filters',
+    'profile',
     'store',
     'address',
     'specialty',
     'plan',
     'product',
     'rest_framework',
+    'rest_framework.authtoken',
+    'sorl.thumbnail',
+    'guardian',
 ]
 
 MIDDLEWARE = [
@@ -60,7 +64,7 @@ ROOT_URLCONF = 'cardapioOnlineApi.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,9 +82,22 @@ WSGI_APPLICATION = 'cardapioOnlineApi.wsgi.application'
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100,
-    'PAGINATE_BY_PARAM': 'page_size'
+    'PAGE_SIZE': 20,
+    'PAGINATE_BY_PARAM': 'page_size',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
 }
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # default
+    'guardian.backends.ObjectPermissionBackend',
+)
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -90,6 +107,10 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+}
+
+PERMISSIONS = {
+    'admin': 'ADMIN',
 }
 
 # Password validation
@@ -128,22 +149,39 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+if not DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    ("img", os.path.join(BASE_DIR, "static/images")),
+    ("css", os.path.join(BASE_DIR, "static/css")),
+    ("js", os.path.join(BASE_DIR, "static/js")),
+    ("fonts", os.path.join(BASE_DIR, "static/fonts")),
+    ("libs", os.path.join(BASE_DIR, "static/libs")),
+    ("extra-libs", os.path.join(BASE_DIR, "static/extra-libs")),
+]
+
 MEDIA_ROOT = 'public'
 
 MEDIA_URL = '/media/'
 
 MEDIA_LOGO_SIZE = 300
 
-MEDIA_LOGO_THUMBNAIL_SIZE = 100
-
+MEDIA_THUMBNAIL_SIZE = 100
 
 DAYS_OF_WEEK = [
-        ('Mon', 'Monday'),
-        ('Tue', 'Tuesday'),
-        ('Wed', 'Wednesday'),
-        ('Thu', 'Thursday'),
-        ('Fri', 'Friday'),
-        ('Sat', 'Saturday'),
-        ('Sun', 'Sunday'),
-    ]
+    ('Mon', 'Monday'),
+    ('Tue', 'Tuesday'),
+    ('Wed', 'Wednesday'),
+    ('Thu', 'Thursday'),
+    ('Fri', 'Friday'),
+    ('Sat', 'Saturday'),
+    ('Sun', 'Sunday'),
+]
 
+LOGIN_URL = '/login/'
+
+LOGIN_REDIRECT_URL = 'profile_update'
+
+AUTH_PROFILE_MODULE = 'profile.Profile'

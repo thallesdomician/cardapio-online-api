@@ -1,11 +1,11 @@
 from rest_framework.viewsets import ModelViewSet
 
-from address.api.serializers import AddressSerializer
-from address.models import Address
+from plan.api.serializers import PlanSerializer
+from plan.models import Plan
 
 
-class AddressViewSet(ModelViewSet):
-    queryset = Address.objects.all()
+class PlanViewSet(ModelViewSet):
+    queryset = Plan.objects.all()
 
-    serializer_class = AddressSerializer
+    serializer_class = PlanSerializer
 

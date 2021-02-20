@@ -1,5 +1,5 @@
 from django import forms
-from .models import Store
+from .models import Store, OpenDay
 
 
 class StoreForm(forms.ModelForm):
@@ -9,4 +9,14 @@ class StoreForm(forms.ModelForm):
             'name',
             'description',
             'cnpj'
+        ]
+
+
+
+
+class OpenDayForm(forms.ModelForm):
+    class Meta:
+        model = OpenDay
+        fields = [
+            'day_of_week'
         ]

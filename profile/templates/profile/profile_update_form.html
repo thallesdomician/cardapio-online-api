@@ -14,6 +14,9 @@
                         {% csrf_token %}
                         <div class="row">
                             {% for field in form %}
+                                {% for error in form.errors %}
+                                    {{ error }}
+                                {% endfor %}
 
                                 <div class="col-lg-6">
                                     <div class="form-group">
@@ -39,7 +42,7 @@
                             {% endfor %}
                         </div>
                         <div class="col-lg-6 offset-lg-3 text-center">
-                            <button type="submit" class="btn btn-block btn-dark">{% trans 'Save' %}</button>
+                            <input type="submit" class="btn btn-block btn-dark" value="{% trans 'Save' %}"/>
                         </div>
                     </form>
                 </div>

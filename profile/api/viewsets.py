@@ -1,11 +1,14 @@
 from rest_framework.viewsets import ModelViewSet
 
-from plan.api.serializers import PlanSerializer
-from plan.models import Plan
+from profile.api.serializers import ProfileSerializer
+from profile.models import Profile
 
 
-class PlanViewSet(ModelViewSet):
-    queryset = Plan.objects.all()
+class ProfileViewSet(ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
 
-    serializer_class = PlanSerializer
+
+
+
 

@@ -32,7 +32,7 @@ def valite_cnpj(cnpj):
         )
 
 
-def validate_logo_size(image):
+def validate_image_size(image):
     max_size = MEDIA_LOGO_SIZE
     if hasattr(image, 'image'):
         height = image.image.height
@@ -42,3 +42,11 @@ def validate_logo_size(image):
         width = image.width
     if width != max_size or height != max_size:
         raise ValidationError(_("Height and Width must be %(value)dpx"), params={'value': MEDIA_LOGO_SIZE})
+
+
+def validate_start_end(start, end):
+    if end <= start:
+        raise ValidationError(
+            _('%(end)s must be longer than the %(start)s'),
+            params={'end': end, 'start': start},
+        )

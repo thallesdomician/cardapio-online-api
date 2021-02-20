@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from cardapioOnlineApi.base_model import BaseModel
+from globals.models.base_model import BaseModel
 
 
 class State(models.Model):
@@ -29,7 +29,7 @@ class City(models.Model):
 
 
 class Address(BaseModel):
-    store = models.OneToOneField('store.Store', on_delete=models.CASCADE, primary_key=True)
+    store = models.OneToOneField('store.Store', on_delete=models.CASCADE, editable=False)
     place = models.CharField(max_length=200)
     number = models.CharField(max_length=15)
     complement = models.CharField(max_length=15, null=True, blank=True)

@@ -1,9 +1,9 @@
 from rest_framework.serializers import ModelSerializer
 
-from address.models import Address
+from plan.models import Plan
 
 
-class AddressSerializer(ModelSerializer):
+class PlanSerializer(ModelSerializer):
     class Meta:
-        model = Address
-        fields = ('id', 'store', 'place', 'number', 'complement', 'district', 'city', 'cep', 'created_at', 'updated_at')
+        model = Plan
+        fields = ('id', 'name', 'active', 'description', 'price', 'created_at', 'updated_at')
