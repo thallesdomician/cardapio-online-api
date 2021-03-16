@@ -2,6 +2,8 @@ from guardian.shortcuts import assign_perm
 from rest_framework.serializers import ModelSerializer
 from rest_framework.validators import UniqueValidator
 from rest_framework.exceptions import PermissionDenied
+from django.utils.translation import gettext_lazy as _
+from guardian.shortcuts import get_objects_for_user
 
 from cardapioOnlineApi.settings import PERMISSIONS
 from store.models import Store, Phone, StorePlan, OpenTime, OpenDay
@@ -44,18 +46,24 @@ class StoreSerializer(ModelSerializer):
         fields = (
             'id', 'name', 'logo', 'slug', 'cnpj', 'active', 'created_at', 'updated_at')
         extra_kwargs = {
+            'id': {'read_only': True},
+            'logo': {'read_only': True},
             'active': {'read_only': True},
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
         }
     def create(self, validated_data):
+        user = self.context['request'].user
+        user_stores = list(filter(lambda x: not x.deleted_at, get_objects_for_user(user, 'store.change_store')))
+        if(len(user_stores) >= 1):
+            raise PermissionDenied({"message": _("Limit to create stores exceeded. Update your plan!")})
+
+
         store = Store(**validated_data)
         store.save()
-        user = self.context['request'].user
-        assign_perm('change_store', user, store)
-        assign_perm('change_store', user, store)
-        assign_perm('change_store', user, store)
-        assign_perm('change_store', user, store)
+        assign_perm('store.update_store', user, store)
+        assign_perm('store.delete_store', user, store)
+
 
         return store
 

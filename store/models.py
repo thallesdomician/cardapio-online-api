@@ -19,6 +19,11 @@ class Store(BaseModel):
     cnpj = models.CharField(max_length=14, null=True, blank=True, validators=[valite_cnpj], verbose_name='CNPJ')
     specialty = models.ForeignKey(Specialty, on_delete=models.SET_NULL, null=True, blank=True)
 
+    permissions = (
+        ('create_store', 'Create Store'),
+    )
+
+
     def full_plan(self):
         return self.storeplan
 
