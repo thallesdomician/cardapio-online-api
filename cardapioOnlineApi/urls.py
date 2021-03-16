@@ -13,21 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from django.conf import settings
 from django.conf.urls.static import static
-from rest_framework.authtoken.views import obtain_auth_token
-from django.contrib.auth import views as auth_views
 
+from profile.api.viewsets import ProfileViewSet
 from plan.api.viewsets import PlanViewSet
-from profile.views import LoginProfileView, UserCreate, CurrentUserView
 from store.api.viewsets import StoreViewSet
 from address.api.viewsets import AddressViewSet
 from specialty.api.viewsets import SpecialtyViewSet
-from profile.api.viewsets import ProfileViewSet
-from profile import urls as profile_urls
 
 # TODO implementar api version v1,v2,v3, etc... será que vale a pena?
 #  https://www.django-rest-framework.org/api-guide/versioning/
@@ -40,13 +37,9 @@ router.register('plan', PlanViewSet)
 router.register('profile', ProfileViewSet)
 
 urlpatterns = [
-                  path('api/v1/', include(router.urls)),
                   path('admin/', admin.site.urls),
-                  path('login/', LoginProfileView.as_view(), name='login'),
-                  path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-                  path('api-auth/', include('rest_framework.urls')),
-                  path('account', CurrentUserView.as_view()),
-                  path('account/register', UserCreate.as_view()),
-
-                  path('auth/', obtain_auth_token)
+                  path('auth/', include('auth.urls')),
+                  path('api/v1/', include(router.urls)),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+

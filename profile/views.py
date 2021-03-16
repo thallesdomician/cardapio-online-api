@@ -9,7 +9,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from profile.api.serializers import UserRegisterSerializer, UserSerializer
+from profile.api.serializers import UserSerializer
 from profile.forms import CreateForm, ProfileUpdateForm, AuthenticationProfileForm
 from profile.models import Profile
 
@@ -39,11 +39,6 @@ class ProfileUpdate(UpdateView):
 class LoginProfileView(LoginView):
     form_class = AuthenticationProfileForm
 
-
-class UserCreate(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserRegisterSerializer
-    permission_classes = (AllowAny, )
 
 
 class CurrentUserView(APIView):

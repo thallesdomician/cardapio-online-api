@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 # from .forms import StoreForm
 from address.models import Address, AddressAdminInline
 from globals.models.base_model import BaseModel
-from cardapioOnlineApi.settings import  DAYS_OF_WEEK
+from cardapioOnlineApi.settings import DAYS_OF_WEEK
 from plan.models import Plan
 from specialty.models import Specialty
 from store.validators import valite_cnpj, validate_start_end
@@ -96,7 +96,6 @@ class StoreAdmin(admin.ModelAdmin):
     fields = ['name',
               'slug',
               'logo',
-              'thumbnail',
               'description',
               'cnpj',
               'specialty']
