@@ -20,6 +20,7 @@ from rest_framework import routers
 from django.conf import settings
 from django.conf.urls.static import static
 
+from product.api.viewset import CategoryViewSet
 from profile.api.viewsets import ProfileViewSet
 from plan.api.viewsets import PlanViewSet
 from store.api.viewsets import StoreViewSet
@@ -30,6 +31,7 @@ from specialty.api.viewsets import SpecialtyViewSet
 #  https://www.django-rest-framework.org/api-guide/versioning/
 
 router = routers.DefaultRouter()
+router.register('category', CategoryViewSet)
 router.register('store', StoreViewSet)
 router.register('address', AddressViewSet)
 router.register('specialty', SpecialtyViewSet)
@@ -39,7 +41,7 @@ router.register('profile', ProfileViewSet)
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('auth/', include('auth.urls')),
-                  path('api/v1/', include(router.urls)),
+                  path('api/', include(router.urls)),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

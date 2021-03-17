@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from guardian.shortcuts import get_objects_for_user
 
 from cardapioOnlineApi.settings import PERMISSIONS
+from product.models import Category
 from store.models import Store, Phone, StorePlan, OpenTime, OpenDay
 from store.validators import valite_cnpj
 
@@ -44,24 +45,26 @@ class StoreSerializer(ModelSerializer):
     class Meta:
         model = Store
         fields = (
-            'id', 'name', 'logo', 'slug', 'cnpj', 'active', 'created_at', 'updated_at')
+            'id', 'name', 'logo', 'slug', 'description', 'cnpj', 'active', 'created_at', 'updated_at')
         extra_kwargs = {
             'id': {'read_only': True},
             'logo': {'read_only': True},
             'active': {'read_only': True},
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
+            'url': {'lookup_field': 'slug'},
         }
+
     def create(self, validated_data):
         user = self.context['request'].user
-        user_stores = list(filter(lambda x: not x.deleted_at, get_objects_for_user(user, 'store.change_store')))
+        user_stores = list(get_objects_for_user(user, 'store.change_store'))
         if(len(user_stores) >= 1):
-            raise PermissionDenied({"message": _("Limit to create stores exceeded. Update your plan!")})
+            raise PermissionDenied({"message": _("Limit to create stores exceeded.")})
 
 
         store = Store(**validated_data)
         store.save()
-        assign_perm('store.update_store', user, store)
+        assign_perm('store.change_store', user, store)
         assign_perm('store.delete_store', user, store)
 
 
@@ -74,7 +77,6 @@ class StoreSerializer(ModelSerializer):
             raise PermissionDenied({"message": "You don't have permission to access",
                                     "object_id": instance.id})
         instance.name = validated_data.get('name', instance.name)
-        instance.logo = validated_data.get('logo', instance.logo)
         instance.slug = validated_data.get('slug', instance.slug)
         instance.description = validated_data.get('description', instance.description)
         instance.cnpj = validated_data.get('cnpj', instance.cnpj)
@@ -86,3 +88,9 @@ class StoreSerializer(ModelSerializer):
         valite_cnpj(attrs['cnpj'])
         UniqueValidator(queryset=Store.objects.all())
         return attrs
+
+
+class StoreCategorySerializer(ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('name',)

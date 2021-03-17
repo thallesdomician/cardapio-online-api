@@ -36,6 +36,10 @@ class Store(BaseModel):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+
+        super(Store, self).save(*args, **kwargs)
+
 
 
 class StorePlan(BaseModel):

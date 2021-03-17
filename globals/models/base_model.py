@@ -15,6 +15,7 @@ class BaseModel(models.Model):
 
     def delete(self, using=None, keep_parents=False):
         self.active = False
+        self.deleted_at = datetime.now()
         self.save()
 
     def save(self, *args, **kwargs):
