@@ -27,6 +27,8 @@ class ProfileCreate(CreateView):
 class ProfileDetail(DetailView):
     model = Profile
 
+
+
 class ProfileUpdate(UpdateView):
     model = Profile
     template_name_suffix = '_update_form'

@@ -1,26 +1,14 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ImageField
 
 from profile.models import Profile
 
 from django.contrib.auth.models import User
 
 
-class UserSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'first_name', 'last_name', 'username', 'email', 'is_active')
-        extra_kwargs = {
-            'username': {'read_only': True},
-            'is_staff': {'read_only': True},
-            'is_active': {'read_only': True},
-            'is_superuser': {'read_only': True},
-        }
-
-
-
-
 class ProfileSerializer(ModelSerializer):
-    user = UserSerializer()
+    image = ImageField(
+        max_length=None, use_url=True
+    )
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user')
@@ -48,5 +36,22 @@ class ProfileSerializer(ModelSerializer):
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
         }
+
+
+
+
+class UserSerializer(ModelSerializer):
+    profile = ProfileSerializer()
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'username', 'email', 'is_active', 'profile')
+        extra_kwargs = {
+            'username': {'read_only': True},
+            'is_staff': {'read_only': True},
+            'is_active': {'read_only': True},
+            'is_superuser': {'read_only': True},
+        }
+
+
 
 
