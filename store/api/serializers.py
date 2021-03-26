@@ -57,9 +57,9 @@ class StoreSerializer(ModelSerializer):
 
     def create(self, validated_data):
         user = self.context['request'].user
-        user_stores = list(get_objects_for_user(user, 'store.change_store'))
-        if(len(user_stores) >= 1):
-            raise PermissionDenied({"message": _("Limit to create stores exceeded.")})
+        # user_stores = list(get_objects_for_user(user, 'store.change_store'))
+        # if(len(user_stores) >= 1):
+        #     raise PermissionDenied({"message": _("Limit to create stores exceeded.")})
 
 
         store = Store(**validated_data)

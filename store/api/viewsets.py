@@ -8,7 +8,10 @@ from product.models import Category
 from store.api.serializers import StoreSerializer, StoreCategorySerializer
 from store.models import Store
 
+from guardian.shortcuts import get_objects_for_user
+
 from rest_framework.pagination import PageNumberPagination
+
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 30
@@ -16,7 +19,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100
 
 
-class StoreViewSet(ModelViewSet):
+class StoreOwnerViewSet(ModelViewSet):
     queryset = Store.objects.filter(deleted_at__isnull=True)
     pagination_class = StandardResultsSetPagination
 
@@ -25,6 +28,13 @@ class StoreViewSet(ModelViewSet):
     filter_fields = ('name', 'specialty')
 
     lookup_field = 'slug'
+
+    def get_queryset(self):
+        user = self.request.user
+        allowed = get_objects_for_user(user, ['store.change_store'])
+        return Store.objects.filter(pk__in=allowed, deleted_at__isnull=True)
+
+
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -47,7 +57,6 @@ class StoreViewSet(ModelViewSet):
         store = self.get_object()
         queryset = Category.objects.filter(deleted_at__isnull=True, store=store)
 
-
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = StoreCategorySerializer(page, many=True)
@@ -57,13 +66,13 @@ class StoreViewSet(ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        return super(StoreViewSet, self).create(request, *args, **kwargs)
+        return super(StoreOwnerViewSet, self).create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         user = request.user
         if not user.has_perm('store.delete_store', instance):
-            raise PermissionDenied({"message": "You don't have permission to delete",
+            raise PermissionDenied({"message"  : "You don't have permission to delete",
                                     "object_id": instance.id})
 
         self.perform_destroy(instance)

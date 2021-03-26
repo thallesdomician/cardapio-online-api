@@ -16,12 +16,11 @@ class Profile(BaseModel):
     phone = models.CharField(max_length=11, blank=True, null=True)
 
 
-
-
 class ProfileInline(AdminImageMixin, admin.StackedInline):
     model = Profile
     can_delete = False
     verbose_name_plural = 'profiles'
+
 
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
