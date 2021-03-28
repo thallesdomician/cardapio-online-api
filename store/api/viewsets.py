@@ -5,8 +5,8 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import action
 
 from product.models import Category
-from store.api.serializers import StoreSerializer, StoreCategorySerializer
-from store.models import Store
+from store.api.serializers import StoreSerializer, StoreCategorySerializer, PhoneSerializer
+from store.models import Store, Phone
 
 from guardian.shortcuts import get_objects_for_user
 
@@ -55,6 +55,10 @@ class StoreOwnerViewSet(ModelViewSet):
     @action(methods=['get'], detail=True, url_path='category', url_name='store_category')
     def retrieve_categories(self, request, *args, **kwargs):
         store = self.get_object()
+        user = request.user
+        if not user.has_perm('store.change_store', store):
+            raise PermissionDenied({"message"  : "You don't have permission to delete",
+                                    "object_id": store.id})
         queryset = Category.objects.filter(deleted_at__isnull=True, store=store)
 
         page = self.paginate_queryset(queryset)
@@ -64,6 +68,7 @@ class StoreOwnerViewSet(ModelViewSet):
 
         serializer = StoreCategorySerializer(queryset, many=True)
         return Response(serializer.data)
+
 
     def create(self, request, *args, **kwargs):
         return super(StoreOwnerViewSet, self).create(request, *args, **kwargs)

@@ -18,7 +18,7 @@ class State(models.Model):
 
 class City(models.Model):
     name = models.CharField(max_length=40)
-    state = models.ForeignKey(State, on_delete=models.CASCADE)
+    state = models.ForeignKey(State, on_delete=models.CASCADE, related_name='city',)
 
     def __str__(self):
         return '{}/{}'.format(self.name, self.state.uf)
@@ -29,7 +29,7 @@ class City(models.Model):
 
 
 class Address(BaseModel):
-    store = models.OneToOneField('store.Store', on_delete=models.CASCADE, editable=False)
+    store = models.OneToOneField('store.Store', on_delete=models.CASCADE, related_name='address', editable=False)
     place = models.CharField(max_length=200)
     number = models.CharField(max_length=15)
     complement = models.CharField(max_length=15, null=True, blank=True)
