@@ -160,6 +160,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+UPLOADED_FILES_USE_URL= True
+
 if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -177,7 +179,7 @@ MEDIA_ROOT = 'public'
 
 MEDIA_URL = '/media/'
 
-MEDIA_LOGO_SIZE = 300
+MEDIA_LOGO_SIZE = 3 # em megabytes
 
 MEDIA_THUMBNAIL_SIZE = 100
 

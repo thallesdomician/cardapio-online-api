@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from sorl.thumbnail import ImageField
+from sorl.thumbnail import get_thumbnail
+from django.core.files.base import ContentFile
 
 # from .forms import StoreForm
 from address.models import Address, AddressAdminInline
@@ -9,12 +11,14 @@ from cardapioOnlineApi.settings import DAYS_OF_WEEK
 from globals.models.base_model import BaseModel
 from plan.models import Plan
 from specialty.models import Specialty
-from store.validators import valite_cnpj, validate_start_end
+from store.validators import valite_cnpj, validate_start_end, validate_image_square
+
+
 
 
 class Store(BaseModel):
 	name = models.CharField(max_length=100, )
-	logo = ImageField(upload_to='store', null=True, blank=True, default='store/default.svg', )
+	logo = ImageField(upload_to='store', null=True, blank=True, default='store/default.svg', validators=[validate_image_square])
 	slug = models.SlugField(max_length=100, unique=True)
 	description = models.TextField(null=True, blank=True)
 	cnpj = models.CharField(max_length=14, null=True, blank=True, validators=[valite_cnpj], verbose_name='CNPJ')
@@ -37,8 +41,23 @@ class Store(BaseModel):
 		return self.name
 
 	def save(self, *args, **kwargs):
+		# logo = get_thumbnail(self.logo, '300x300', crop='center', quality=99)
+		# # Manually reassign the resized image to the image field
+		# self.logo.save(logo.name, logo.read(), True)
+
 		super(Store, self).save(*args, **kwargs)
 
+
+
+# @TODO: preciso trocar a logo para avatar na store...
+#  deixar separado é mais facil na hora de enviar os dados
+class StoreAvatar(models.Model):
+	avatar = ImageField(upload_to='store/avatar', null=True, blank=True, default='store/avatar/default.svg',)
+	store = models.OneToOneField(Store, related_name='avatar', on_delete=models.CASCADE, editable=False, null=True)
+
+class StoreWallpaper(models.Model):
+	wallpaper = ImageField(upload_to='store/wallpaper', null=True, blank=True, default='store/wallpaper/default.svg',)
+	store = models.OneToOneField(Store, related_name='wallpaper', on_delete=models.CASCADE, editable=False, null=True)
 
 class StorePlan(BaseModel):
 	store = models.OneToOneField(Store, related_name='plan', on_delete=models.CASCADE, editable=False)
@@ -69,6 +88,11 @@ class OpenTime(BaseModel):
 	def clean(self):
 		validate_start_end(self.start, self.end)
 
+class StoreAvatarAdminInline(admin.TabularInline):
+	model = StoreAvatar
+
+class StoreWallpaperAdminInline(admin.TabularInline):
+	model = StoreWallpaper
 
 class StorePlanAdminInline(admin.TabularInline):
 	model = StorePlan
@@ -105,9 +129,11 @@ class StoreAdmin(admin.ModelAdmin):
 	          'logo',
 	          'description',
 	          'cnpj',
-	          'specialty']
+	          'specialty',]
 	list_display = ('slug', 'name', 'full_address', 'specialty', 'plan', 'updated_at', 'active')
 	inlines = [
+		StoreWallpaperAdminInline,
+		StoreAvatarAdminInline,
 		StorePlanAdminInline,
 		PhoneAdminInline,
 		AddressAdminInline,

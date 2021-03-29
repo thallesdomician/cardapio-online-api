@@ -135,5 +135,5 @@ dmypy.json
  !**/migrations
  !**/migrations/__init__.py
 
- ./public/store
- ./public/thumbnail
+ public/*
+./*/migrations/
