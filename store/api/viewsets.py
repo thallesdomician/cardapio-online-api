@@ -11,7 +11,7 @@ from rest_framework.viewsets import ModelViewSet
 from product.models import Category
 from store.api.serializers import StoreSerializer, StoreCategorySerializer, StoreLogoSerializer, StoreAvatarSerializer, \
     StoreWallpaperSerializer
-from store.models import Store, StoreAvatar
+from store.models import Store, StoreAvatar, StoreWallpaper
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -103,7 +103,13 @@ class StoreOwnerViewSet(ModelViewSet):
         serializer = StoreAvatarSerializer(data=request.data,  context={"request":request})
 
         if serializer.is_valid():
-            if store.avatar:
+
+            has_avatar = False
+            try:
+                has_avatar = (store.avatar is not None)
+            except StoreAvatar.DoesNotExist:
+                pass
+            if has_avatar:
                 store.avatar.delete()
             avatar = serializer.create(serializer.validated_data)
             avatar.store = store
@@ -124,7 +130,12 @@ class StoreOwnerViewSet(ModelViewSet):
         serializer = StoreWallpaperSerializer(data=request.data, context={"request": request})
 
         if serializer.is_valid():
-            if store.wallpaper:
+            has_wallpaper = False
+            try:
+                has_wallpaper = (store.wallpaper is not None)
+            except StoreWallpaper.DoesNotExist:
+                pass
+            if has_wallpaper:
                 store.wallpaper.delete()
             wallpaper = serializer.create(serializer.validated_data)
             wallpaper.store = store

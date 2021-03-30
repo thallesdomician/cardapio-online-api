@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist, FieldDoesNotExist
 from django.db import models
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
@@ -20,6 +21,16 @@ class BaseModel(models.Model):
 
     def save(self, *args, **kwargs):
         super(BaseModel, self).save(*args, **kwargs)
+
+    @classmethod
+    def model_field_exists(cls, field):
+        try:
+            cls._meta.get_field(field)
+            return True
+        except FieldDoesNotExist:
+            return False
+
+    models.Model.field_exists = model_field_exists
 
     class Meta:
         abstract = True
