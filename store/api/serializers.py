@@ -1,6 +1,6 @@
 from guardian.shortcuts import assign_perm
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.serializers import ModelSerializer,ImageField
+from rest_framework.serializers import ModelSerializer, ImageField
 from rest_framework.validators import UniqueValidator
 
 from address.api.serializers import AddressSerializer
@@ -29,7 +29,21 @@ class OpenDaySerializer(ModelSerializer):
 class PhoneSerializer(ModelSerializer):
     class Meta:
         model = Phone
-        fields = ('ddd', 'number', 'main')
+        fields = ('id', 'ddd', 'number', 'main')
+        extra_kwargs = {
+            'id': {'read_only': True},
+        }
+
+
+class PhoneSerializerList(ModelSerializer):
+    phones = PhoneSerializer(many=True)
+
+    class Meta:
+        model = Store
+        fields = ('id', 'phones',)
+        extra_kwargs = {
+            'id': {'read_only': True},
+        }
 
 
 class StorePlanSerializer(ModelSerializer):
@@ -45,13 +59,14 @@ class StoreAvatarSerializer(ModelSerializer):
         model = StoreAvatar
         fields = ('avatar', 'id')
         extra_kwargs = {
-            'id': {'read_only': True},
+            'id' : {'read_only': True},
             'url': {'lookup_field': 'id'},
         }
+
     # def create(self, validated_data):
     #     avatar = StoreAvatar.objects.create(**validated_data)
     #     return avatar
-        # super(StoreAvatarSerializer).create(self, validated_data)
+    # super(StoreAvatarSerializer).create(self, validated_data)
 
     def validate(self, attrs):
         UniqueValidator(queryset=Store.objects.all())
@@ -72,13 +87,13 @@ class StoreSerializer(ModelSerializer):
     days = OpenDaySerializer(many=True, read_only=True)
     address = AddressSerializer(read_only=True)
     avatar = StoreAvatarSerializer(required=False, read_only=False)
-    wallpaper = StoreWallpaperSerializer(required=False, read_only=False )
+    wallpaper = StoreWallpaperSerializer(required=False, read_only=False)
 
     class Meta:
         model = Store
         fields = (
-        'id', 'name', 'logo', 'wallpaper', 'avatar', 'slug', 'description', 'cnpj', 'address', 'phones', 'days',
-        'active',)
+            'id', 'name', 'logo', 'wallpaper', 'avatar', 'slug', 'description', 'cnpj', 'address', 'phones', 'days',
+            'active',)
         extra_kwargs = {
             'id'       : {'read_only': True},
             'logo'     : {'read_only': True},

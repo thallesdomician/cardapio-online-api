@@ -10,7 +10,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from product.models import Category
 from store.api.serializers import StoreSerializer, StoreCategorySerializer, StoreLogoSerializer, StoreAvatarSerializer, \
-    StoreWallpaperSerializer
+    StoreWallpaperSerializer, PhoneSerializerList
 from store.models import Store, StoreAvatar, StoreWallpaper
 
 
@@ -143,5 +143,20 @@ class StoreOwnerViewSet(ModelViewSet):
             serializer = StoreWallpaperSerializer(wallpaper, context={"request": request})
 
             return Response(serializer.data)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['post'], detail=True, url_path='phones', url_name='store_phones')
+    def change_phones(self, request, *args, **kwargs):
+        store = self.get_object()
+        user = request.user
+        if not user.has_perm('store.change_store', store):
+            raise PermissionDenied({"message"  : "You don't have permission to change",
+                                    "object_id": store.id})
+
+        # phones_data = validated_data.pop('phones')
+        serializer = PhoneSerializerList(data=request.data, context={"request": request})
+        if serializer.is_valid():
+            pass
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
