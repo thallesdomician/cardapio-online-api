@@ -29,10 +29,11 @@ class OpenDaySerializer(ModelSerializer):
 class PhoneSerializer(ModelSerializer):
     class Meta:
         model = Phone
-        fields = ('id', 'ddd', 'number', 'main')
+        fields = ('id', 'ddd', 'number', 'whatsapp')
         extra_kwargs = {
             'id': {'read_only': True},
         }
+        # list_serializer_class =
 
 
 class PhoneSerializerList(ModelSerializer):
@@ -44,6 +45,19 @@ class PhoneSerializerList(ModelSerializer):
         extra_kwargs = {
             'id': {'read_only': True},
         }
+
+    def update(self, instance, validated_data):
+        phones_data = validated_data.pop('phones')
+
+        phone_list = []
+
+        for phone in phones_data:
+            phone, created = Phone.objects.update_or_create( ddd=phone['ddd'], number=phone['number'], whatsapp=phone['whatsapp'],
+                                                         store=instance)
+            phone_list.append(phone)
+        instance.phones.set(phone_list)
+        instance.save()
+        return instance
 
 
 class StorePlanSerializer(ModelSerializer):
@@ -62,11 +76,6 @@ class StoreAvatarSerializer(ModelSerializer):
             'id' : {'read_only': True},
             'url': {'lookup_field': 'id'},
         }
-
-    # def create(self, validated_data):
-    #     avatar = StoreAvatar.objects.create(**validated_data)
-    #     return avatar
-    # super(StoreAvatarSerializer).create(self, validated_data)
 
     def validate(self, attrs):
         UniqueValidator(queryset=Store.objects.all())
@@ -124,6 +133,8 @@ class StoreSerializer(ModelSerializer):
 
     def update(self, instance, validated_data):
         user = self.context['request'].user
+
+        # @todo remover esse bloco daqui e colocar na viewset de update
         if not user.has_perm('store.change_store', instance):
             raise PermissionDenied({"message"  : "You don't have permission to access",
                                     "object_id": instance.id})

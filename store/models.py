@@ -2,8 +2,6 @@ from django.contrib import admin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from sorl.thumbnail import ImageField
-from sorl.thumbnail import get_thumbnail
-from django.core.files.base import ContentFile
 
 # from .forms import StoreForm
 from address.models import Address, AddressAdminInline
@@ -12,8 +10,6 @@ from globals.models.base_model import BaseModel
 from plan.models import Plan
 from specialty.models import Specialty
 from store.validators import valite_cnpj, validate_start_end, validate_image_square
-
-
 
 
 class Store(BaseModel):
@@ -69,7 +65,9 @@ class Phone(BaseModel):
 	store = models.ForeignKey(Store, related_name='phones', on_delete=models.CASCADE, editable=False)
 	ddd = models.CharField(max_length=2)
 	number = models.CharField(max_length=9)
-	main = models.BooleanField(default=False)
+	whatsapp = models.BooleanField(default=True)
+
+
 
 
 class OpenDay(BaseModel):

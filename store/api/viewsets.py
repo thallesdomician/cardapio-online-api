@@ -146,7 +146,7 @@ class StoreOwnerViewSet(ModelViewSet):
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=['post'], detail=True, url_path='phones', url_name='store_phones')
+    @action(methods=['put'], detail=True, url_path='phones', url_name='store_phones')
     def change_phones(self, request, *args, **kwargs):
         store = self.get_object()
         user = request.user
@@ -154,9 +154,9 @@ class StoreOwnerViewSet(ModelViewSet):
             raise PermissionDenied({"message"  : "You don't have permission to change",
                                     "object_id": store.id})
 
-        # phones_data = validated_data.pop('phones')
-        serializer = PhoneSerializerList(data=request.data, context={"request": request})
+        serializer = PhoneSerializerList(data=request.data, instance=store, context={"request": request})
         if serializer.is_valid():
-            pass
+            serializer.save()
+            return Response(serializer.data)
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
