@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import datetime
+from decouple import config
+import  dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,12 +22,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'g_1zolk=!e&uz621dbx0nysrw$$fzf4f3^4k(8svb#v53r&twr'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['*', '192.168.1.7']
+ALLOWED_HOSTS = ['*']
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -112,13 +114,9 @@ AUTHENTICATION_BACKENDS = (
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+DATABASES = {'default': dj_database_url.parse(config('DATABASE_URL', default=default_dburl)), }
 
 PERMISSIONS = {
     'admin': 'ADMIN',
@@ -160,7 +158,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-UPLOADED_FILES_USE_URL= True
+UPLOADED_FILES_USE_URL = True
 
 if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -175,11 +173,13 @@ STATICFILES_DIRS = [
     ("extra-libs", os.path.join(BASE_DIR, "static/extra-libs")),
 ]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 MEDIA_ROOT = 'public'
 
 MEDIA_URL = '/media/'
 
-MEDIA_LOGO_SIZE = 3 # em megabytes
+MEDIA_LOGO_SIZE = 3  # em megabytes
 
 MEDIA_THUMBNAIL_SIZE = 100
 
