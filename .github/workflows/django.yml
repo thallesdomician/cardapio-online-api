@@ -13,7 +13,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v2
@@ -26,11 +26,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         
-    - name: Run PyLint
-      run: |
-        pylint **/*.py
-    - name: Run Tests 
-      run: |
-        python manage.py test with key
+    - name: Checkout action
+        uses: actions/checkout@v2
+          - name: Django Coverage action
+            uses: actions/python-django-coverage-gitHub-action@0.9
+            with:
+              django-app: 'cardapio-online-api'
+              minimum-coverage: '50'
       env:
         SECRET_KEY: "${{ env.SECRET_KEY }}"
