@@ -27,11 +27,11 @@ jobs:
         pip install -r requirements.txt
         
     - name: Checkout action
-        uses: actions/checkout@v2
-          - name: Django Coverage action
-            uses: actions/python-django-coverage-gitHub-action@0.9
-            with:
-              django-app: 'cardapio-online-api'
-              minimum-coverage: '50'
+      uses: actions/checkout@v2
+    - name: Django Coverage action
+      uses: actions/python-django-coverage-gitHub-action@0.9
+      with:
+        django-app: 'cardapio-online-api'
+        minimum-coverage: '50'
       env:
         SECRET_KEY: "${{ env.SECRET_KEY }}"
