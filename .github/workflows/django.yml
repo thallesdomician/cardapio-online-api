@@ -26,7 +26,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Django Coverage action
-      uses: actions/python-django-coverage-gitHub-action@0.9
+      uses: dc740/django-coveragepy-github-action@0.9
       with:
         django-app: 'cardapio-online-api'
         minimum-coverage: '50'
