@@ -28,7 +28,7 @@ jobs:
     - name: Django Coverage action
       uses: dc740/django-coveragepy-github-action@0.9
       with:
-        django-app: 'cardapio-online-api'
+        django-app: 'profile'
         minimum-coverage: '50'
       env:
         SECRET_KEY: "${{ env.SECRET_KEY }}"
