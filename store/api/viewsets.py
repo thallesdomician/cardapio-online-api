@@ -1,4 +1,4 @@
-from django.core.files.base import ContentFile
+# from django.core.files.base import ContentFile
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import status
 from rest_framework.decorators import action

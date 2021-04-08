@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from sorl.thumbnail import ImageField
 
 # from .forms import StoreForm
-from address.models import Address, AddressAdminInline
+from address.models import AddressAdminInline
 from cardapioOnlineApi.settings import DAYS_OF_WEEK
 from globals.models.base_model import BaseModel
 from plan.models import Plan

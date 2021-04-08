@@ -8,6 +8,3 @@ class SpecialtyViewSet(ModelViewSet):
     queryset = Specialty.objects.all()
 
     serializer_class = SpecialtySerializer
-
-
-

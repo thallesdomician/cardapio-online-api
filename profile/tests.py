@@ -1,12 +1,12 @@
-import json
-from django.contrib.auth.models import User
-from django.urls import reverse
+# import json
+# from django.contrib.auth.models import User
+# from django.urls import reverse
 from rest_framework import status
-from rest_framework.authtoken.models import Token
+# from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from profile.api.serializers import ProfileSerializer
-from profile.models import Profile
+# from profile.api.serializers import ProfileSerializer
+# from profile.models import Profile
 
 
 class RegistrationTestCase(APITestCase):
