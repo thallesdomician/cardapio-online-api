@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from sorl.thumbnail import ImageField
 
 # from .forms import StoreForm
-from address.models import AddressAdminInline
+from address.models import AddressAdminInline, Address
 from cardapioOnlineApi.settings import DAYS_OF_WEEK
 from globals.models.base_model import BaseModel
 from plan.models import Plan
@@ -19,6 +19,7 @@ class Store(BaseModel):
 	description = models.TextField(null=True, blank=True)
 	cnpj = models.CharField(max_length=14, null=True, blank=True, validators=[valite_cnpj], verbose_name='CNPJ')
 	specialty = models.ForeignKey(Specialty, on_delete=models.SET_NULL, null=True, blank=True)
+	address = models.OneToOneField(Address, on_delete=models.CASCADE, null=True, blank=True)
 
 	permissions = (
 		('create_store', 'Create Store'),
@@ -55,13 +56,13 @@ class StoreWallpaper(models.Model):
 	wallpaper = ImageField(upload_to='store/wallpaper', null=True, blank=True, default='store/wallpaper/default.svg',)
 	store = models.OneToOneField(Store, related_name='wallpaper', on_delete=models.CASCADE, editable=False, null=True)
 
-class StorePlan(BaseModel):
+class StorePlan(models.Model):
 	store = models.OneToOneField(Store, related_name='plan', on_delete=models.CASCADE, editable=False)
 	plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True)
 	expiration = models.DateTimeField(null=True, blank=True)
 
 
-class Phone(BaseModel):
+class Phone(models.Model):
 	store = models.ForeignKey(Store, related_name='phones', on_delete=models.CASCADE, editable=False)
 	ddd = models.CharField(max_length=2)
 	number = models.CharField(max_length=9)
@@ -70,7 +71,7 @@ class Phone(BaseModel):
 
 
 
-class OpenDay(BaseModel):
+class OpenDay(models.Model):
 	day_of_week = models.CharField(max_length=3, choices=DAYS_OF_WEEK)
 	store = models.ForeignKey(Store, related_name='days', on_delete=models.CASCADE)
 
@@ -78,7 +79,7 @@ class OpenDay(BaseModel):
 		unique_together = ('day_of_week', 'store')
 
 
-class OpenTime(BaseModel):
+class OpenTime(models.Model):
 	start = models.TimeField()
 	end = models.TimeField()
 	day = models.ForeignKey(OpenDay, related_name='times', on_delete=models.CASCADE)
@@ -134,7 +135,6 @@ class StoreAdmin(admin.ModelAdmin):
 		StoreAvatarAdminInline,
 		StorePlanAdminInline,
 		PhoneAdminInline,
-		AddressAdminInline,
 		OpenDayAdminInline
 	]
 

@@ -3,7 +3,8 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.serializers import ModelSerializer, ImageField
 from rest_framework.validators import UniqueValidator
 
-from address.api.serializers import AddressSerializer
+from address.api.serializers import AddressSerializer, CitySerializer
+from address.models import Address, State, City
 from product.models import Category
 from store.models import Store, Phone, StorePlan, OpenTime, OpenDay, StoreAvatar, StoreWallpaper
 from store.validators import valite_cnpj
@@ -50,12 +51,48 @@ class PhoneSerializerList(ModelSerializer):
         phones_data = validated_data.pop('phones')
 
         phone_list = []
-
+        phones = instance.phones.all()
+        for phone in phones:
+            phone.delete()
         for phone in phones_data:
-            phone, created = Phone.objects.update_or_create( ddd=phone['ddd'], number=phone['number'], whatsapp=phone['whatsapp'],
-                                                         store=instance)
+            phone, created = Phone.objects.update_or_create(ddd=phone['ddd'], number=phone['number'],
+                                                            whatsapp=phone['whatsapp'],
+                                                            store=instance)
             phone_list.append(phone)
         instance.phones.set(phone_list)
+        instance.save()
+        return instance
+
+
+class OpenDaysSerializerList(ModelSerializer):
+    days = OpenDaySerializer(many=True)
+
+    class Meta:
+        model = Store
+        fields = ('id', 'days',)
+        extra_kwargs = {
+            'id': {'read_only': True},
+        }
+
+
+    def update(self, instance, validated_data):
+        days_data = validated_data.pop('days')
+
+        day_list = []
+        days = instance.days.all()
+        for day in days:
+            day.delete()
+        for day in days_data:
+            times_data = day.pop('times')
+            day, created = OpenDay.objects.update_or_create(day_of_week=day['day_of_week'], store=instance)
+            day_list.append(day)
+            times_list = []
+            for time in times_data:
+                time, created = OpenTime.objects.update_or_create(start=time['start'], end=time['end'], day=day)
+                times_list.append(time)
+            day.times.set(times_list)
+            day.save()
+        instance.days.set(days)
         instance.save()
         return instance
 
@@ -73,7 +110,7 @@ class StoreAvatarSerializer(ModelSerializer):
         model = StoreAvatar
         fields = ('avatar', 'id')
         extra_kwargs = {
-            'id' : {'read_only': True},
+            'id': {'read_only': True},
             'url': {'lookup_field': 'id'},
         }
 
@@ -104,11 +141,11 @@ class StoreSerializer(ModelSerializer):
             'id', 'name', 'logo', 'wallpaper', 'avatar', 'slug', 'description', 'cnpj', 'address', 'phones', 'days',
             'active',)
         extra_kwargs = {
-            'id'       : {'read_only': True},
-            'logo'     : {'read_only': True},
+            'id': {'read_only': True},
+            'logo': {'read_only': True},
             'wallpaper': {'read_only': True},
-            'avatar'   : {'read_only': True},
-            'url'      : {'lookup_field': 'slug'},
+            'avatar': {'read_only': True},
+            'url': {'lookup_field': 'slug'},
         }
 
     def create(self, validated_data):
@@ -136,7 +173,7 @@ class StoreSerializer(ModelSerializer):
 
         # @todo remover esse bloco daqui e colocar na viewset de update
         if not user.has_perm('store.change_store', instance):
-            raise PermissionDenied({"message"  : "You don't have permission to access",
+            raise PermissionDenied({"message": "You don't have permission to access",
                                     "object_id": instance.id})
         instance.name = validated_data.get('name', instance.name)
         instance.slug = validated_data.get('slug', instance.slug)
@@ -179,3 +216,24 @@ class StoreLogoSerializer(ModelSerializer):
         extra_kwargs = {
             'id': {'read_only': True},
         }
+
+
+class StoreAddressSerializer(ModelSerializer):
+    address = AddressSerializer()
+
+    class Meta:
+        model = Store
+        fields = ('address',)
+
+    def update(self, instance, validated_data):
+        addresss_data = validated_data.pop('address')
+        city_data = addresss_data.pop('city')
+        state_data = city_data.pop('state')
+        state, create_state = State.objects.update_or_create(**state_data)
+        city, create_city = City.objects.update_or_create(**city_data, state=state)
+        address, create_address = Address.objects.update_or_create(store=instance,
+                                                                   defaults=addresss_data, city=city)
+
+        instance.address = address
+        instance.save()
+        return instance

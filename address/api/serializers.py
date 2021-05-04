@@ -10,15 +10,21 @@ class StateSerializer(ModelSerializer):
 
 
 class CitySerializer(ModelSerializer):
-	state = StateSerializer(read_only=True)
+	state = StateSerializer()
 
 	class Meta:
 		model = City
 		fields = ('name', 'state')
 
 
+
 class AddressSerializer(ModelSerializer):
-	city = CitySerializer(read_only=True)
+	city = CitySerializer()
 	class Meta:
 		model = Address
-		fields = ('id', 'store', 'place', 'number', 'complement', 'district', 'city', 'cep')
+		fields = ('cep', 'id', 'place', 'number', 'complement', 'district', 'city', )
+
+		extra_kwargs = {
+			'id': {'read_only': True},
+		}
+

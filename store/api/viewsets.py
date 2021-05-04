@@ -7,10 +7,9 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-
 from product.models import Category
 from store.api.serializers import StoreSerializer, StoreCategorySerializer, StoreLogoSerializer, StoreAvatarSerializer, \
-    StoreWallpaperSerializer, PhoneSerializerList
+    StoreWallpaperSerializer, PhoneSerializerList, StoreAddressSerializer, OpenDaysSerializerList
 from store.models import Store, StoreAvatar, StoreWallpaper
 
 
@@ -20,7 +19,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100
 
 
-class StoreOwnerViewSet(ModelViewSet):
+class StoreViewSet(ModelViewSet):
     queryset = Store.objects.filter(deleted_at__isnull=True)
     pagination_class = StandardResultsSetPagination
 
@@ -33,7 +32,8 @@ class StoreOwnerViewSet(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         allowed = get_objects_for_user(user, ['store.change_store'])
-        return Store.objects.filter(pk__in=allowed, deleted_at__isnull=True)
+        return Store.objects.filter(pk__in=allowed, deleted_at__isnull=True).prefetch_related('phones').filter(
+            deleted_at__isnull=True)
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -56,7 +56,7 @@ class StoreOwnerViewSet(ModelViewSet):
         store = self.get_object()
         user = request.user
         if not user.has_perm('store.change_store', store):
-            raise PermissionDenied({"message"  : "You don't have permission to change",
+            raise PermissionDenied({"message": "You don't have permission to change",
                                     "object_id": store.id})
         queryset = Category.objects.filter(deleted_at__isnull=True, store=store)
 
@@ -69,18 +69,17 @@ class StoreOwnerViewSet(ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        return super(StoreOwnerViewSet, self).create(request, *args, **kwargs)
+        return super(StoreViewSet, self).create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         user = request.user
         if not user.has_perm('store.delete_store', instance):
-            raise PermissionDenied({"message"  : "You don't have permission to delete",
+            raise PermissionDenied({"message": "You don't have permission to delete",
                                     "object_id": instance.id})
 
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
     def logo(self, request, *args, **kwargs):
         if request.method == 'GET':
@@ -98,9 +97,9 @@ class StoreOwnerViewSet(ModelViewSet):
         store = self.get_object()
         user = request.user
         if not user.has_perm('store.change_store', store):
-            raise PermissionDenied({"message"  : "You don't have permission to change",
+            raise PermissionDenied({"message": "You don't have permission to change",
                                     "object_id": store.id})
-        serializer = StoreAvatarSerializer(data=request.data,  context={"request":request})
+        serializer = StoreAvatarSerializer(data=request.data, context={"request": request})
 
         if serializer.is_valid():
 
@@ -114,7 +113,7 @@ class StoreOwnerViewSet(ModelViewSet):
             avatar = serializer.create(serializer.validated_data)
             avatar.store = store
             avatar.save()
-            serializer = StoreAvatarSerializer(avatar,  context={"request":request})
+            serializer = StoreAvatarSerializer(avatar, context={"request": request})
 
             return Response(serializer.data)
         return Response(serializer.errors,
@@ -125,7 +124,7 @@ class StoreOwnerViewSet(ModelViewSet):
         store = self.get_object()
         user = request.user
         if not user.has_perm('store.change_store', store):
-            raise PermissionDenied({"message"  : "You don't have permission to change",
+            raise PermissionDenied({"message": "You don't have permission to change",
                                     "object_id": store.id})
         serializer = StoreWallpaperSerializer(data=request.data, context={"request": request})
 
@@ -151,10 +150,40 @@ class StoreOwnerViewSet(ModelViewSet):
         store = self.get_object()
         user = request.user
         if not user.has_perm('store.change_store', store):
-            raise PermissionDenied({"message"  : "You don't have permission to change",
+            raise PermissionDenied({"message": "You don't have permission to change",
                                     "object_id": store.id})
 
         serializer = PhoneSerializerList(data=request.data, instance=store, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['put'], detail=True, url_path='address', url_name='store_address')
+    def change_address(self, request, *args, **kwargs):
+        store = self.get_object()
+        user = request.user
+        if not user.has_perm('store.change_store', store):
+            raise PermissionDenied({"message": "You don't have permission to change",
+                                    "object_id": store.id})
+
+        serializer = StoreAddressSerializer(data=request.data, instance=store, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['put'], detail=True, url_path='open-days', url_name='store_open_days')
+    def change_open_days(self, request, *args, **kwargs):
+        store = self.get_object()
+        user = request.user
+        if not user.has_perm('store.change_store', store):
+            raise PermissionDenied({"message": "You don't have permission to change",
+                                    "object_id": store.id})
+
+        serializer = OpenDaysSerializerList(data=request.data, instance=store, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
