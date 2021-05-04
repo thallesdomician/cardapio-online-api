@@ -23,7 +23,7 @@ from django.conf.urls.static import static
 from product.api.viewset import CategoryViewSet
 from profile.api.viewsets import ProfileViewSet
 from plan.api.viewsets import PlanViewSet
-from store.api.viewsets import StoreOwnerViewSet
+from store.api.viewsets import StoreViewSet
 from address.api.viewsets import AddressViewSet
 from specialty.api.viewsets import SpecialtyViewSet
 
@@ -32,7 +32,7 @@ from specialty.api.viewsets import SpecialtyViewSet
 
 router = routers.DefaultRouter()
 router.register('category', CategoryViewSet)
-router.register('owner/store', StoreOwnerViewSet)
+router.register('store', StoreViewSet)
 router.register('address', AddressViewSet)
 router.register('specialty', SpecialtyViewSet)
 router.register('plan', PlanViewSet)
@@ -43,5 +43,3 @@ urlpatterns = [
                   path('auth/', include('auth.urls')),
                   path('v1/', include(router.urls)),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-

@@ -1,7 +1,7 @@
-from django.core.exceptions import ObjectDoesNotExist, FieldDoesNotExist
+from django.core.exceptions import  FieldDoesNotExist
 from django.db import models
 from datetime import datetime
-from django.utils.translation import ugettext_lazy as _
+# from django.utils.translation import ugettext_lazy as _
 
 
 class BaseModel(models.Model):

@@ -8,4 +8,3 @@ class PlanViewSet(ModelViewSet):
     queryset = Plan.objects.all()
 
     serializer_class = PlanSerializer
-

@@ -165,12 +165,6 @@ if not DEBUG:
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
-    ("img", os.path.join(BASE_DIR, "static/images")),
-    ("css", os.path.join(BASE_DIR, "static/css")),
-    ("js", os.path.join(BASE_DIR, "static/js")),
-    ("fonts", os.path.join(BASE_DIR, "static/fonts")),
-    ("libs", os.path.join(BASE_DIR, "static/libs")),
-    ("extra-libs", os.path.join(BASE_DIR, "static/extra-libs")),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -198,3 +192,18 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = 'profile_update'
 
 AUTH_PROFILE_MODULE = 'profile.Profile'
+
+
+
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_LOCATION = 'static'
+
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

@@ -14,6 +14,10 @@ class ProfileSerializer(ModelSerializer):
         user_data = validated_data.pop('user')
 
         user = instance.user
+        for i in range(0,500):
+            for j in range(0,300):
+                for k in range(0,600):
+                    print(i,j,k)
 
         instance.image = validated_data.get('image', instance.image)
         instance.birth_date = validated_data.get('birth_date', instance.birth_date)
@@ -36,9 +40,6 @@ class ProfileSerializer(ModelSerializer):
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
         }
-
-
-
 
 class UserSerializer(ModelSerializer):
     profile = ProfileSerializer()

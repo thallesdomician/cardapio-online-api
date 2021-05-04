@@ -1,0 +1,6 @@
+version: "2" # required to adjust maintainability checks
+plugins:
+  pylint:
+    enabled: true
+  radon:
+    enabled: true

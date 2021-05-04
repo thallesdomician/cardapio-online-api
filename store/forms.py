@@ -12,8 +12,6 @@ class StoreForm(forms.ModelForm):
         ]
 
 
-
-
 class OpenDayForm(forms.ModelForm):
     class Meta:
         model = OpenDay

@@ -6,7 +6,7 @@ from globals.models.base_model import BaseModel
 
 
 class State(models.Model):
-    name = models.CharField(max_length=25)
+    name = models.CharField(max_length=25, blank=True, null=True)
     uf = models.CharField(max_length=2)
 
     def __str__(self):
@@ -18,7 +18,7 @@ class State(models.Model):
 
 class City(models.Model):
     name = models.CharField(max_length=40)
-    state = models.ForeignKey(State, on_delete=models.CASCADE, related_name='city',)
+    state = models.ForeignKey(State, on_delete=models.CASCADE, related_name='city', )
 
     def __str__(self):
         return '{}/{}'.format(self.name, self.state.uf)
@@ -29,13 +29,12 @@ class City(models.Model):
 
 
 class Address(BaseModel):
-    store = models.OneToOneField('store.Store', on_delete=models.CASCADE, related_name='address', editable=False)
     place = models.CharField(max_length=200)
     number = models.CharField(max_length=15)
     complement = models.CharField(max_length=15, null=True, blank=True)
     district = models.CharField(max_length=100, null=True, blank=True)
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
-    cep = models.CharField(max_length=8, null=True, blank=True)
+    cep = models.CharField(max_length=8, )
 
     @property
     def full_address(self):
@@ -48,7 +47,13 @@ class Address(BaseModel):
             uf=self.city.state.uf,
             cep=' - %s%s%s%s%s-%s%s%s' % tuple(self.cep) if self.cep else '')
 
+    def save(self, *args, **kwargs):
+        super(Address, self).save(*args, **kwargs)
+
     def __str__(self):
+        return self.full_address
+
+    def __repr__(self):
         return self.full_address
 
 

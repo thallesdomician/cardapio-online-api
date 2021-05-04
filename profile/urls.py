@@ -1,5 +1,5 @@
-from django.urls import path, reverse
-from .views import ProfileCreate, ProfileUpdate, ProfileDetail
+from django.urls import path
+from .views import ProfileUpdate, ProfileDetail
 
 urlpatterns = [
     path('<int:pk>/update', ProfileUpdate.as_view(), name='profile_update'),
